@@ -42,7 +42,7 @@ void CreatUDN(MGraph &G)//创建邻接矩阵
         G.arcs[b][a] = G.arcs[a][b];
     }
 }
-void PrintMap(MGraph G)
+void PrintMap(MGraph G)//输出邻接矩阵
 {
     for (i = 0; i < G.vexnum;i++)
     {

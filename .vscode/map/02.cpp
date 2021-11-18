@@ -27,7 +27,7 @@ int LocateVex(ALGraph G,char v)
     }
     return -1;
 }
-void CreatGraph(ALGraph &G)
+void CreatGraph(ALGraph &G)//创建邻接表
 {
     int a, b, w;
     char v1, v2;
@@ -54,7 +54,7 @@ void CreatGraph(ALGraph &G)
         G.vertices[b].firstarc = p2;
     }
 }
-void PrintMap(ALGraph G)
+void PrintMap(ALGraph G)//输出邻接表
 {
     for (i = 0; i < G.vexnum;i++)
     {
