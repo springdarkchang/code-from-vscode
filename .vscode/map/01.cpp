@@ -21,7 +21,7 @@ int Locate(MGraph G,char v)
     }
     return -1;
 }
-void CreatUDN(MGraph &G)
+void CreatUDN(MGraph &G)//创建邻接矩阵
 {
     int a, b, w;
     char v1, v2;
