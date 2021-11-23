@@ -1,11 +1,12 @@
 #include<iostream>
 #include<cstring>
 using namespace std;
+int k;
 class CDate
 {
 public:
     int Year, Month, Day;
-    CDate(const CDate &d);
+    CDate(const CDate &d):Year(d.Year),Month(d.Month),Day(d.Day){}
     CDate(int y = 0, int m = 0, int d = 0) : Year(y), Month(m), Day(d) {}
     inline void SetYear()
     {
@@ -45,12 +46,13 @@ public:
     {
         return !(*this == d);
     }
+    CDate operator+(const CDate &d);
 };
 class CTime
 {
 public:
     int Hour, Minute, Second;
-    CTime(const CTime &d);
+    CTime(const CTime &d):Hour(d.Hour),Minute(d.Minute),Second(d.Second){}
     CTime(int h = 0, int m = 0, int s = 0) : Hour(h), Minute(m), Second(s){}
     inline void SetHour()
     {
@@ -87,14 +89,15 @@ public:
     }
     void operator++();
     void operator--();
+    CTime operator+(const CTime &t);
 };
 class CDateTime:public CDate, public CTime
 {
 public:
-    CDateTime(const CDateTime &d);
+    CDateTime(CDate d,CTime t):CDate(d),CTime(t){}
     CDateTime(int y=0,int mo=0,int d=0,int h=0,int mi=0,int s=0):CDate(y,mo,d),CTime(h,mi,s){}
     void Showdt();
-    CDateTime operator+(const CDateTime &dt) const;
+    CDateTime operator+(const CDateTime &dt);
 };
 string CDate::GetWeekNameofDate()
 {
@@ -181,6 +184,28 @@ bool CDate::operator<=(const CDate &d) const
                 return false;
     return true;
 }
+CDate CDate::operator+(const CDate &d)
+{
+    int n;
+    CDate i;
+    i.Day = Day + d.Day + k;
+    i.Month = Month + d.Month;
+    i.Year = Year + d.Year;
+    n = i.DaynumofMonth();
+    while (i.Day > n)
+    {
+        i.Day -= n;
+        i.Month++;
+        if (i.Month > 12)
+        {
+            i.Month -= 12;
+            i.Year++;
+        }
+        n = i.DaynumofMonth();
+    }
+    k = 0;
+    return i;
+}
 bool CTime::operator<=(const CTime &t) const
 {
     if(Hour>t.Hour)
@@ -229,31 +254,23 @@ void CTime::operator--()
 }
 int CDate::DaynumofMonth()
 {
-    int n;
-    if(Month==1||3||5||7||8||10||12)
-        n = 31;
-    if(Month==4||6||9||11)
-        n = 30;
-    if(Month==2)
+    if ((Month % 12) == 1 || (Month % 12) == 3 || (Month % 12) == 5 || (Month % 12) == 7 || (Month % 12) == 8 || (Month % 12) == 10 || (Month % 12) == 12)
+        return 31;
+    if ((Month % 12) == 4 || (Month % 12) == 6 || (Month % 12) == 9 || (Month % 12) == 11)
+        return 30;
+    if((Month%12)==2)
     {
         if(IsLeapYear())
-            n = 29;
+            return 29;
         else
-            n = 28;
+            return 28;
     }
-    return n;
+    return -1;
 }
-void CDateTime::Showdt()
+CTime CTime::operator+(const CTime &t)
 {
-    cout << "The date is ";
-    ShowDate();
-    cout << "The time is ";
-    ShowTime();
-}
-CDateTime CDateTime::operator+(const CDateTime &t) const
-{
-    int n, k=0;
-    CDateTime i;
+    CTime i;
+    k = 0;
     i.Second = Second + t.Second;
     i.Minute = Minute + t.Minute;
     i.Hour = Hour + t.Hour;
@@ -270,24 +287,24 @@ CDateTime CDateTime::operator+(const CDateTime &t) const
     if (i.Hour >= 24)
     {
         i.Hour -= 24;
-        i.Day++;
-    }
-    i.Day = Day + t.Day + k;
-    i.Month = Month + t.Month;
-    i.Year = Year + t.Year;
-    n = i.DaynumofMonth();
-    while (i.Day > n)
-    {
-        i.Day -= n;
-        i.Month++;
-        if (i.Month > 12)
-        {
-            i.Month -= 12;
-            i.Year++;
-        }
-        n = i.DaynumofMonth();
+        k++;
     }
     return i;
+}
+void CDateTime::Showdt()
+{
+    cout << "The date is ";
+    ShowDate();
+    cout << "The time is ";
+    ShowTime();
+}
+CDateTime CDateTime::operator+(const CDateTime &dt)
+{
+    CDate d;
+    CTime t;
+    t = this->CTime::operator+(dt);
+    d = this->CDate::operator+(dt);
+    return CDateTime(d,t);
 }
 int main()
 {
